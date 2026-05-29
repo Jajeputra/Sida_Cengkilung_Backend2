@@ -158,6 +158,15 @@ const getAllPengajuanAdmin = async (filters = {}) => {
   query += ' ORDER BY FIELD(p.status, "MENUNGGU", "DRAFT", "LEGALISI", "SIAP", "SELESAI"), p.tanggal_pengajuan DESC';
   
   const [rows] = await pool.execute(query, params);
+
+  for (const row of rows) {
+    const [details] = await pool.execute(
+      `SELECT field_name, field_value FROM tb_detail_pengajuan WHERE id_pengajuan = ?`,
+      [row.id_pengajuan]
+    );
+    row.detail_fields = details;
+  }
+
   return rows;
 };
 
